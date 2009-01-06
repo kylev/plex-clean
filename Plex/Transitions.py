@@ -5,10 +5,8 @@
 #   for speed.
 #
 
-from copy import copy
-import string
-from sys import maxint
-from types import TupleType
+import sys
+
 
 class TransitionMap:
   """
@@ -29,8 +27,8 @@ class TransitionMap:
   
   The following invariants hold:
     n >= 1
-    code_0 == -maxint
-    code_n == maxint
+    code_0 == -sys.maxint
+    code_n == sys.maxint
     code_i < code_i+1 for i in 0..n-1
     states_0 == states_n-1
   
@@ -43,19 +41,18 @@ class TransitionMap:
   
   def __init__(self, map = None, special = None):
     if not map:
-      map = [-maxint, {}, maxint]
+      map = [-sys.maxint, {}, sys.maxint]
     if not special:
       special = {}
     self.map = map
     self.special = special
     #self.check() ###
-  
-  def add(self, event, new_state,
-    TupleType = TupleType):
+
+  def add(self, event, new_state, tuple_type=tuple):
     """
     Add transition to |new_state| on |event|.
     """
-    if type(event) == TupleType:
+    if isinstance(event, tuple_type):
       code0, code1 = event
       i = self.split(code0)
       j = self.split(code1)
@@ -66,12 +63,11 @@ class TransitionMap:
     else:
       self.get_special(event)[new_state] = 1
 
-  def add_set(self, event, new_set,
-    TupleType = TupleType):
+  def add_set(self, event, new_set, tuple_type=tuple):
     """
     Add transitions to the states in |new_set| on |event|.
     """
-    if type(event) == TupleType:
+    if isinstance(event, tuple_type):
       code0, code1 = event
       i = self.split(code0)
       j = self.split(code1)
@@ -114,8 +110,7 @@ class TransitionMap:
   
   # ------------------- Private methods --------------------
 
-  def split(self, code,
-    len = len, maxint = maxint):
+  def split(self, code, len=len, maxint=sys.maxint):
     """
     Search the list for the position of the split point for |code|, 
     inserting a new split point if necessary. Returns index |i| such 
@@ -165,9 +160,9 @@ class TransitionMap:
     i = 0
     while i < n:
       code = map[i]
-      if code == -maxint:
+      if code == -sys.maxint:
         code_str = "-inf"
-      elif code == maxint:
+      elif code == sys.maxint:
         code_str = "inf"
       else:
         code_str = str(code)
@@ -180,7 +175,7 @@ class TransitionMap:
     for event, set in self.special.items():
       special_strs[event] = state_set_str(set)
     return "[%s]+%s" % (
-      string.join(map_strs, ","), 
+      ','.join(map_strs),
       special_strs
     )
   
@@ -207,12 +202,12 @@ class TransitionMap:
   
   def dump_range(self, code0, code1, set, file):
     if set:
-      if code0 == -maxint:
-        if code1 == maxint:
+      if code0 == -sys.maxint:
+        if code1 == sys.maxint:
           k = "any"
         else:
           k = "< %s" % self.dump_char(code1)
-      elif code1 == maxint:
+      elif code1 == sys.maxint:
         k = "> %s" % self.dump_char(code0 - 1)
       elif code0 == code1 - 1:
         k = self.dump_char(code0)
@@ -237,16 +232,10 @@ class TransitionMap:
 #   State set manipulation functions
 #
 
-#def merge_state_sets(set1, set2):
-#		for state in set2.keys():
-#			set1[state] = 1
-
 def state_set_str(set):
   state_list = set.keys()
   str_list = []
   for state in state_list:
     str_list.append("S%d" % state.number)
-  return "[%s]" % string.join(str_list, ",")
-  
-    
+  return "[%s]" % ','.join(str_list)
 

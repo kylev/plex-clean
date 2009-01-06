@@ -7,7 +7,6 @@
 #=======================================================================
 
 import sys
-import types
 
 from Transitions import TransitionMap
 
@@ -113,7 +112,6 @@ class Node:
     return "State %d" % self.number
 
   def dump(self, file):
-    import string
     # Header
     file.write("   State %d:\n" % self.number)
     # Transitions
@@ -176,7 +174,7 @@ class FastMachine:
     self.initial_states[name] = state
   
   def add_transitions(self, state, event, new_state):
-    if type(event) == types.TupleType:
+    if isinstance(event, tuple):
       code0, code1 = event
       if code0 == -sys.maxint:
         state['else'] = new_state
@@ -199,7 +197,6 @@ class FastMachine:
       self.dump_state(state, file)
 
   def dump_state(self, state, file):
-    import string
     # Header
     file.write("   State %d:\n" % state['number'])
     # Transitions
