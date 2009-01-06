@@ -6,10 +6,8 @@
 #
 #=======================================================================
 
-import string
 import sys
-from sys import maxint
-from types import TupleType
+import types
 
 from Transitions import TransitionMap
 
@@ -178,11 +176,11 @@ class FastMachine:
     self.initial_states[name] = state
   
   def add_transitions(self, state, event, new_state):
-    if type(event) == TupleType:
+    if type(event) == types.TupleType:
       code0, code1 = event
-      if code0 == -maxint:
+      if code0 == -sys.maxint:
         state['else'] = new_state
-      elif code1 <> maxint:
+      elif code1 <> sys.maxint:
         while code0 < code1:
           state[chr(code0)] = new_state
           code0 = code0 + 1
@@ -254,10 +252,10 @@ class FastMachine:
         c2 = c2 + 1
       result.append((chr(c1), chr(c2)))
     return tuple(result)
-  
+
   def ranges_to_string(self, range_list):
-    return string.join(map(self.range_to_string, range_list), ",")
-  
+    return ','.join(map(self.range_to_string, range_list))
+
   def range_to_string(self, (c1, c2)):
     if c1 == c2:
       return repr(c1)
