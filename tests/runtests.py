@@ -47,11 +47,13 @@ def run():
         tests = sys.argv[1:]
     else:
         tests = glob.glob("test?*.py")
+
     for test_py in tests:
         test_name = os.path.splitext(test_py)[0]
         test_out = test_name + ".out"
         test_out2 = test_name + ".out2"
         test_err = test_name + ".err"
+
         if os.path.exists(test_out):
             print "%s:" % test_name,
             sys.stdout.flush()
@@ -72,6 +74,7 @@ def run():
                 print "succeeded"
             else:
                 print "error *****"
+
         if succeeded:
             remove(test_out2)
             remove(test_err)
