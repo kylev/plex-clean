@@ -110,7 +110,7 @@ class TransitionMap:
 
     # ------------------- Private methods --------------------
 
-    def split(self, code, len=len, maxint=sys.maxint):
+    def split(self, code):
         """
         Search the list for the position of the split point for |code|,
         inserting a new split point if necessary. Returns index |i| such
@@ -120,7 +120,7 @@ class TransitionMap:
         map = self.map
         hi = len(map) - 1
         # Special case: code == map[-1]
-        if code == maxint:
+        if code == sys.maxint:
             return hi
         # General case
         lo = 0
@@ -144,12 +144,11 @@ class TransitionMap:
         """
         Get state set for special event, adding a new entry if necessary.
         """
-        special = self.special
-        set = special.get(event, None)
-        if not set:
-            set = {}
-            special[event] = set
-        return set
+        state_set = self.special.get(event)
+        if not state_set:
+            state_set = {}
+            self.special[event] = state_set
+        return state_set
 
     # --------------------- Conversion methods -----------------------
 
