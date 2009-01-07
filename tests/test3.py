@@ -13,11 +13,11 @@ spaces = Seq(space, Rep(space))
 resword = Str("program", "begin", "end", "repeat", "until")
 
 lex = Lexicon([
-  (resword, TEXT),
-  (ident, 'ident'),
-  (number, 'num'),
-  (punct, TEXT),
-  (spaces, IGNORE)
+    (resword, TEXT),
+    (ident, 'ident'),
+    (number, 'num'),
+    (punct, TEXT),
+    (spaces, IGNORE)
 ],
 debug = Test.debug,
 timings = sys.stderr

@@ -15,13 +15,13 @@ begin_comment = Str("{")
 end_comment = Str("}")
 
 lex = Lexicon([
-  (ident, 'ident'),
-  (spaces, IGNORE),
-  (begin_comment, Begin('comment')),
-  State('comment', [
-    (end_comment, Begin('')),
-    (AnyBut("}"), IGNORE),
-  ])
+    (ident, 'ident'),
+    (spaces, IGNORE),
+    (begin_comment, Begin('comment')),
+    State('comment', [
+        (end_comment, Begin('')),
+        (AnyBut("}"), IGNORE),
+    ])
 ],
 debug = Test.debug,
 timings = sys.stderr

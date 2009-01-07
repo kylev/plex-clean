@@ -3,8 +3,8 @@ from Plex import *
 import sys
 
 lex = Lexicon([
-  (Str("a"), 'thing'),
-  (Any("\n"), IGNORE)
+    (Str("a"), 'thing'),
+    (Any("\n"), IGNORE)
 ],
 debug = Test.debug,
 timings = sys.stderr

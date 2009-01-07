@@ -7,10 +7,10 @@ from Plex.Errors import PlexError
 from Plex import Seq, AnyBut
 
 def test_err(s):
-  try:
-    print re(s)
-  except PlexError, e:
-    print e
+    try:
+        print re(s)
+    except PlexError, e:
+        print e
 
 print re("")
 print re("a")
