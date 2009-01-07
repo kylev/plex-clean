@@ -1,31 +1,15 @@
-#=======================================================================
-#
-#	 Python Lexical Analyser
-#
-#	 Regular Expressions
-#
-#=======================================================================
+"""Plex regular expressions."""
 
-import array
-import string
 import types
 from sys import maxint
 
-import Errors
-
-#
-#	 Constants
-#
+from Plex import Errors
 
 BOL = 'bol'
 EOL = 'eol'
 EOF = 'eof'
 
 nl_code = ord('\n')
-
-#
-#	 Helper functions
-#
 
 def chars_to_ranges(s):
  	"""
@@ -330,7 +314,7 @@ class Seq(RE):
     				match_bol = re.match_nl or (match_bol and re.nullable)
 
  	def calc_str(self):
-  		return "Seq(%s)" % string.join(map(str, self.re_list), ",")
+  		return "Seq(%s)" % ','.join(map(str, self.re_list))
 
 
 class Alt(RE):
@@ -369,7 +353,7 @@ class Alt(RE):
     				re.build_machine(m, initial_state, final_state, 0, nocase)
 
  	def calc_str(self):
-  		return "Alt(%s)" % string.join(map(str, self.re_list), ",")
+  		return "Alt(%s)" % ','.join(map(str, self.re_list))
 
 
 class Rep1(RE):
@@ -450,7 +434,7 @@ def Str(*strs):
   		return Str1(strs[0])
  	else:
   		result = apply(Alt, tuple(map(Str1, strs)))
-  		result.str = "Str(%s)" % string.join(map(repr, strs), ",")
+  		result.str = "Str(%s)" % ','.join(map(repr, strs))
   		return result
 
 def Any(s):
