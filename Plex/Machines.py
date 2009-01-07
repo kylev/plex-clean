@@ -8,29 +8,32 @@
 
 import sys
 
-from Plex.Transitions import TransitionMap
+from Transitions import TransitionMap
 
 LOWEST_PRIORITY = -sys.maxint
 
 class Machine:
     """A collection of Nodes representing an NFA or DFA."""
+    states = None         # [Node]
+    next_state_number = 1
+    initial_states = None # {(name, bol): Node}
+
     def __init__(self):
-        self.states = list()
-        self.initial_states = dict()
-        self.next_state_number = 1
+        self.states = []
+        self.initial_states = {}
 
     def __del__(self):
-        # TODO Do we need to do this explicitly?
+        #print "Destroying", self ###
         for state in self.states:
             state.destroy()
 
     def new_state(self):
         """Add a new state to the machine and return it."""
         s = Node()
-        s.number = self.next_state_number
+        n = self.next_state_number
+        self.next_state_number = n + 1
+        s.number = n
         self.states.append(s)
-
-        self.next_state_number += 1
         return s
 
     def new_initial_state(self, name):
@@ -95,42 +98,56 @@ class Node:
     def get_action_priority(self):
         return self.action_priority
 
+#	def merge_actions(self, other_state):
+#		"""Merge actions of other state into this state according
+#    to their priorities."""
+#		action = other_state.get_action()
+#		priority = other_state.get_action_priority()
+#		self.set_action(action, priority)
+
     def is_accepting(self):
         return self.action is not None
 
     def __str__(self):
         return "State %d" % self.number
 
-    def dump(self, out_file):
+    def dump(self, file):
         # Header
         file.write("   State %d:\n" % self.number)
         # Transitions
-        self.transitions.dump(out_file)
+#		self.dump_transitions(file)
+        self.transitions.dump(file)
         # Action
-        if self.action is not None:
-            out_file.write("      %s [priority %d]\n" %
-                           (self.action, self.action_priority))
+        action = self.action
+        priority = self.action_priority
+        if action is not None:
+            file.write("      %s [priority %d]\n" % (action, priority))
 
 
 class FastMachine:
-    """FastMachine is a deterministic machine represented in a way that allows
-    fast scanning.
     """
+    FastMachine is a deterministic machine represented in a way that
+    allows fast scanning.
+    """
+    initial_states = None # {state_name:state}
+    states = None         # [state]
+                                                # where state = {event:state, 'else':state, 'action':Action}
+    next_number = 1       # for debugging
+
     new_state_template = {
-        '': None, 'bol': None, 'eol': None, 'eof': None, 'else': None
+        '':None, 'bol':None, 'eol':None, 'eof':None, 'else':None
     }
 
     def __init__(self, old_machine = None):
-        self.initial_states = dict()
-        self.states = list()
-        self.next_number = 1 # for debugging
+        self.initial_states = initial_states = {}
+        self.states = []
         if old_machine:
             self.old_to_new = old_to_new = {}
             for old_state in old_machine.states:
                 new_state = self.new_state()
                 old_to_new[old_state] = new_state
             for name, old_state in old_machine.initial_states.items():
-                self.initial_states[name] = old_to_new[old_state]
+                initial_states[name] = old_to_new[old_state]
             for old_state in old_machine.states:
                 new_state = old_to_new[old_state]
                 for event, old_state_set in old_state.transitions.items():
@@ -144,10 +161,10 @@ class FastMachine:
         for state in self.states:
             state.clear()
 
-    def new_state(self, action=None):
+    def new_state(self, action = None):
         number = self.next_number
         self.next_number = number + 1
-        result = FastMachine.new_state_template.copy()
+        result = self.new_state_template.copy()
         result['number'] = number
         result['action'] = action
         self.states.append(result)
@@ -161,7 +178,7 @@ class FastMachine:
             code0, code1 = event
             if code0 == -sys.maxint:
                 state['else'] = new_state
-            elif code1 != sys.maxint:
+            elif code1 <> sys.maxint:
                 while code0 < code1:
                     state[chr(code0)] = new_state
                     code0 = code0 + 1
@@ -214,7 +231,7 @@ class FastMachine:
             state = ranges_to_state[ranges]
             file.write("      %s --> State %d\n" % (key, state['number']))
         for key in ('bol', 'eol', 'eof', 'else'):
-            state = special_to_state.get(key)
+            state = special_to_state.get(key, None)
             if state:
                 file.write("      %s --> State %d\n" % (key, state['number']))
 
@@ -241,3 +258,64 @@ class FastMachine:
             return repr(c1)
         else:
             return "%s..%s" % (repr(c1), repr(c2))
+##
+## (Superseded by Machines.FastMachine)
+##
+## class StateTableMachine:
+##   """
+##   StateTableMachine is an alternative representation of a Machine
+##   that can be run more efficiently.
+##   """
+##   initial_states = None # {state_name:state_index}
+##   states = None # [([state] indexed by char code, Action)]
+
+##   special_map = {'bol':256, 'eol':257, 'eof':258}
+
+##   def __init__(self, m):
+##     """
+##     Initialise StateTableMachine from Machine |m|.
+##     """
+##     initial_states = self.initial_states = {}
+##     states = self.states = [None]
+##     old_to_new = {}
+##     i = 1
+##     for old_state in m.states:
+##       new_state = ([0] * 259, old_state.get_action())
+##       states.append(new_state)
+##       old_to_new[old_state] = i # new_state
+##       i = i + 1
+##     for name, old_state in m.initial_states.items():
+##       initial_states[name] = old_to_new[old_state]
+##     for old_state in m.states:
+##       new_state_index = old_to_new[old_state]
+##       new_table = states[new_state_index][0]
+##       transitions = old_state.transitions
+##       for c, old_targets in transitions.items():
+##         if old_targets:
+##           old_target = old_targets[0]
+##           new_target_index = old_to_new[old_target]
+##           if len(c) == 1:
+##             a = ord(c)
+##           else:
+##             a = self.special_map[c]
+##           new_table[a] = states[new_target_index]
+
+##   def dump(self, f):
+##     f.write("Plex.StateTableMachine:\n")
+##     f.write("    Initial states:\n")
+##     for name, index in self.initial_states.items():
+##       f.write("        %s: State %d\n" % (
+##         repr(name), id(self.states[index])))
+##     for i in xrange(1, len(self.states)):
+##       table, action = self.states[i]
+##       f.write("    State %d:" % i)
+##       if action:
+##         f.write("%s" % action)
+##       f.write("\n")
+##       f.write("        %s\n" % map(id,table))
+
+
+
+
+
+

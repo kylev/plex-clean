@@ -115,7 +115,10 @@ class Scanner:
         self.start_pos = self.cur_pos
         self.start_line = self.cur_line
         self.start_col = self.cur_pos - self.cur_line_start
-
+#		if self.trace:
+#			action = self.run_machine()
+#		else:
+#			action = self.run_machine_inlined()
         action = self.run_machine_inlined()
         if action:
             if self.trace:
