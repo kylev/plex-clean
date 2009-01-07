@@ -7,11 +7,11 @@ m = TransitionMap()
 print m
 
 def add(c, s):
-  print
-  print "adding", repr(c), "-->", repr(s)
-  m.add_transition(c, s)
-  print m
-  print "keys:", m.keys()
+    print
+    print "adding", repr(c), "-->", repr(s)
+    m.add_transition(c, s)
+    print m
+    print "keys:", m.keys()
 
 add('a','alpha')
 add('e', 'eta')
