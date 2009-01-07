@@ -1,22 +1,21 @@
-#
-#   Get time in platform-dependent way
-#
+"""Platform independent-ish timing routines for speed testing."""
 
 import os
-from sys import platform, exit, stderr
+import sys
 
-if platform == 'mac':
-  import MacOS
-  def time():
-    return MacOS.GetTicks() / 60.0
-  timekind = "real"
-elif hasattr(os, 'times'):
-  def time():
-    t = os.times()
-    return t[0] + t[1]
-  timekind = "cpu"
+if hasattr(os, 'times'):
+    def time():
+        t = os.times()
+        return t[0] + t[1]
+    timekind = 'cpu'
+elif sys.platform == 'mac':
+    # Fallback for older Mac versions of python
+    import MacOS
+    def time():
+        return MacOS.GetTicks() / 60.0
+    timekind = 'real'
 else:
-  stderr.write(
-    "Don't know how to get time on platform %s\n" % repr(platform))
-  exit(1)
+    sys.stderr.write("Don't know how to get time on platform %s\n"
+                     % repr(platform))
+    sys.exit(1)
 
