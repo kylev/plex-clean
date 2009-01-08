@@ -1,4 +1,10 @@
-"""Plex traditional regular expression syntax."""
+#=======================================================================
+#
+#   Python Lexical Analyser
+#
+#   Traditional Regular Expression Syntax
+#
+#=======================================================================
 
 from Plex.Regexps import *
 from Plex.Errors import PlexError
