@@ -1,14 +1,8 @@
-#=======================================================================
-#
-#   Python Lexical Analyser
-#
-#   Classes for building NFAs and DFAs
-#
-#=======================================================================
+"""Plex classes for building NFAs and DFAs."""
 
 import sys
 
-from Transitions import TransitionMap
+from Plex.Transitions import TransitionMap
 
 LOWEST_PRIORITY = -sys.maxint
 
@@ -98,13 +92,6 @@ class Node:
     def get_action_priority(self):
         return self.action_priority
 
-#	def merge_actions(self, other_state):
-#		"""Merge actions of other state into this state according
-#    to their priorities."""
-#		action = other_state.get_action()
-#		priority = other_state.get_action_priority()
-#		self.set_action(action, priority)
-
     def is_accepting(self):
         return self.action is not None
 
@@ -178,7 +165,7 @@ class FastMachine:
             code0, code1 = event
             if code0 == -sys.maxint:
                 state['else'] = new_state
-            elif code1 <> sys.maxint:
+            elif code1 != sys.maxint:
                 while code0 < code1:
                     state[chr(code0)] = new_state
                     code0 = code0 + 1

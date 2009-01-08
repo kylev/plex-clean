@@ -135,12 +135,12 @@ class RE:
             self.wrong_type(num, value, "Plex.RE instance")
 
     def check_string(self, num, value):
-        if type(value) <> type(''):
+        if isinstance(value, str):
             self.wrong_type(num, value, "string")
 
     def check_char(self, num, value):
         self.check_string(num, value)
-        if len(value) <> 1:
+        if len(value) != 1:
             raise Errors.PlexValueError("Invalid value for argument %d of Plex.%s."
                 "Expected a string of length 1, got: %s" % (
                     num, self.__class__.__name__, repr(value)))
@@ -155,43 +155,6 @@ class RE:
                                         "(expected %s, got %s" % (
                                             num, self.__class__.__name__, expected, got))
 
-#
-#     Primitive RE constructors
-#     -------------------------
-#
-#     These are the basic REs from which all others are built.
-#
-
-## class Char(RE):
-##     """
-##     Char(c) is an RE which matches the character |c|.
-##     """
-
-##     nullable = 0
-
-##     def __init__(self, char):
-##         self.char = char
-##         self.match_nl = char == '\n'
-
-##     def build_machine(self, m, initial_state, final_state, match_bol, nocase):
-##         c = self.char
-##         if match_bol and c <> BOL:
-##             s1 = self.build_opt(m, initial_state, BOL)
-##         else:
-##             s1 = initial_state
-##         if c == '\n' or c == EOF:
-##             s1 = self.build_opt(m, s1, EOL)
-##         if len(c) == 1:
-##             code = ord(self.char)
-##             s1.add_transition((code, code+1), final_state)
-##             if nocase and is_letter_code(code):
-##                 code2 = other_case_code(code)
-##                 s1.add_transition((code2, code2+1), final_state)
-##         else:
-##             s1.add_transition(c, final_state)
-
-##     def calc_str(self):
-##         return "Char(%s)" % repr(self.char)
 
 def Char(c):
     """
