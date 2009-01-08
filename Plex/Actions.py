@@ -6,20 +6,15 @@
 #
 #=======================================================================
 
-class Action:
-
+class Action(object):
     def same_as(self, other):
         return self is other
 
 
 class Return(Action):
+    """Internal Plex action which causes |value| to be returned as the value of
+    the associated token.
     """
-    Internal Plex action which causes |value| to
-    be returned as the value of the associated token
-    """
-
-    value = None
-
     def __init__(self, value):
         self.value = value
 
@@ -34,12 +29,7 @@ class Return(Action):
 
 
 class Call(Action):
-    """
-    Internal Plex action which causes a function to be called.
-    """
-
-    function = None
-
+    """Internal Plex action which causes a function to be called."""
     def __init__(self, function):
         self.function = function
 
@@ -54,14 +44,9 @@ class Call(Action):
 
 
 class Begin(Action):
+    """Begin(state_name) is a Plex action which causes the Scanner to enter the
+    state |state_name|. See the docstring of Plex.Lexicon for more information.
     """
-    Begin(state_name) is a Plex action which causes the Scanner to
-    enter the state |state_name|. See the docstring of Plex.Lexicon
-    for more information.
-    """
-
-    state_name = None
-
     def __init__(self, state_name):
         self.state_name = state_name
 
