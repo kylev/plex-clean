@@ -9,49 +9,41 @@ import sys
 
 
 class TransitionMap:
-    """
-    A TransitionMap maps an input event to a set of states.
-    An input event is one of: a range of character codes,
-    the empty string (representing an epsilon move), or one
-    of the special symbols BOL, EOL, EOF.
+    """A TransitionMap maps an input event to a set of states.  An input event
+    is one of: a range of character codes, the empty string (representing an
+    epsilon move), or one of the special symbols BOL, EOL, EOF.
 
-    For characters, this implementation compactly represents
-    the map by means of a list:
+    For characters, this implementation compactly represents the map by means
+    of a list:
 
         [code_0, states_0, code_1, states_1, code_2, states_2,
             ..., code_n-1, states_n-1, code_n]
 
-    where |code_i| is a character code, and |states_i| is a
-    set of states corresponding to characters with codes |c|
-    in the range |code_i| <= |c| <= |code_i+1|.
+    where |code_i| is a character code, and |states_i| is a set of states
+    corresponding to characters with codes |c| in the range |code_i| <= |c| <=
+    |code_i+1|.
 
     The following invariants hold:
+
         n >= 1
         code_0 == -sys.maxint
         code_n == sys.maxint
         code_i < code_i+1 for i in 0..n-1
         states_0 == states_n-1
 
-    Mappings for the special events '', BOL, EOL, EOF are
-    kept separately in a dictionary.
+    Mappings for the special events '', BOL, EOL, EOF are kept separately in a
+    dictionary.
     """
-
-    map = None     # The list of codes and states
-    special = None # Mapping for special events
-
-    def __init__(self, map = None, special = None):
-        if not map:
-            map = [-sys.maxint, {}, sys.maxint]
+    def __init__(self, t_map=None, special=None):
+        if not t_map:
+            t_map = [-sys.maxint, {}, sys.maxint]
         if not special:
-            special = {}
-        self.map = map
+            special = dict()
+        self.map = t_map
         self.special = special
-        #self.check() ###
 
     def add(self, event, new_state, tuple_type=tuple):
-        """
-        Add transition to |new_state| on |event|.
-        """
+        """Add transition to |new_state| on |event|."""
         if isinstance(event, tuple_type):
             code0, code1 = event
             i = self.split(code0)
@@ -64,9 +56,7 @@ class TransitionMap:
             self.get_special(event)[new_state] = 1
 
     def add_set(self, event, new_set, tuple_type=tuple):
-        """
-        Add transitions to the states in |new_set| on |event|.
-        """
+        """Add transitions to the states in |new_set| on |event|."""
         if isinstance(event, tuple_type):
             code0, code1 = event
             i = self.split(code0)
@@ -79,26 +69,21 @@ class TransitionMap:
             self.get_special(event).update(new_set)
 
     def get_epsilon(self):
-        """
-        Return the mapping for epsilon, or None.
-        """
+        """Return the mapping for epsilon, or None."""
         return self.special.get('')
 
-    def items(self,
-        len = len):
-        """
-        Return the mapping as a list of ((code1, code2), state_set) and
+    def items(self):
+        """Return the mapping as a list of ((code1, code2), state_set) and
         (special_event, state_set) pairs.
         """
         result = []
-        map = self.map
-        else_set = map[1]
+        else_set = self.map[1]
         i = 0
-        n = len(map) - 1
-        code0 = map[0]
+        n = len(self.map) - 1
+        code0 = self.map[0]
         while i < n:
-            set = map[i + 1]
-            code1 = map[i + 2]
+            set = self.map[i + 1]
+            code1 = self.map[i + 2]
             if set or else_set:
                 result.append(((code0, code1), set))
             code0 = code1

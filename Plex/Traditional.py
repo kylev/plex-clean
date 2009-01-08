@@ -6,8 +6,8 @@
 #
 #=======================================================================
 
-from Regexps import *
-from Errors import PlexError
+from Plex.Regexps import *
+from Plex.Errors import PlexError
 
 class RegexpSyntaxError(PlexError):
     pass
@@ -104,7 +104,7 @@ class REParser:
                     char_list.append(chr(a))
             else:
                 char_list.append(c1)
-        chars = string.join(char_list, "")
+        chars = ''.join(char_list)
         if invert:
             return AnyBut(chars)
         else:
