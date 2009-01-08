@@ -42,9 +42,9 @@ class TransitionMap:
         self.map = t_map
         self.special = special
 
-    def add(self, event, new_state, tuple_type=tuple):
+    def add(self, event, new_state):
         """Add transition to |new_state| on |event|."""
-        if isinstance(event, tuple_type):
+        if isinstance(event, tuple):
             code0, code1 = event
             i = self.split(code0)
             j = self.split(code1)
@@ -55,9 +55,9 @@ class TransitionMap:
         else:
             self.get_special(event)[new_state] = 1
 
-    def add_set(self, event, new_set, tuple_type=tuple):
+    def add_set(self, event, new_set):
         """Add transitions to the states in |new_set| on |event|."""
-        if isinstance(event, tuple_type):
+        if isinstance(event, tuple):
             code0, code1 = event
             i = self.split(code0)
             j = self.split(code1)
@@ -129,12 +129,9 @@ class TransitionMap:
         """
         Get state set for special event, adding a new entry if necessary.
         """
-        special = self.special
-        set = special.get(event, None)
-        if not set:
-            set = {}
-            special[event] = set
-        return set
+        if event not in self.special:
+            self.special[event] = dict()
+        return self.special[event]
 
     # --------------------- Conversion methods -----------------------
 
@@ -207,8 +204,8 @@ class TransitionMap:
         else:
             return "chr(%d)" % code
 
-    def dump_trans(self, key, set, file):
-        file.write("      %s --> %s\n" % (key, self.dump_set(set)))
+    def dump_trans(self, key, set, out_file):
+        out_file.write("      %s --> %s\n" % (key, self.dump_set(set)))
 
     def dump_set(self, set):
         return state_set_str(set)

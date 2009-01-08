@@ -6,8 +6,6 @@
 #
 #=======================================================================
 
-import types
-
 import Actions
 import DFA
 import Errors
@@ -19,27 +17,18 @@ DUMP_NFA = 1
 DUMP_DFA = 2
 
 class State:
+    """This class is used as part of a Plex.Lexicon specification to introduce
+    a user-defined state.
     """
-    This class is used as part of a Plex.Lexicon specification to
-    introduce a user-defined state.
-
-    Constructor:
-
-          State(name, token_specifications)
-    """
-
-    name = None
-    tokens = None
-
     def __init__(self, name, tokens):
         self.name = name
         self.tokens = tokens
 
+
 class Lexicon:
-    """
-    Lexicon(specification) builds a lexical analyser from the given
-    |specification|. The specification consists of a list of
-    specification items. Each specification item may be either:
+    """Lexicon(specification) builds a lexical analyser from the given
+    |specification|. The specification consists of a list of specification
+    items. Each specification item may be either:
 
           1) A token definition, which is a tuple:
 
@@ -110,8 +99,8 @@ class Lexicon:
     machine = None # Machine
     tables = None # StateTableMachine
 
-    def __init__(self, specifications, debug = None, debug_flags = 7, timings = None):
-        if type(specifications) <> types.ListType:
+    def __init__(self, specifications, debug=None, debug_flags=7, timings=False):
+        if not isinstance(specifications, list):
             raise Errors.InvalidScanner("Scanner definition is not a list")
         if timings:
             from Timing import time
@@ -127,7 +116,7 @@ class Lexicon:
                     self.add_token_to_machine(
                         nfa, user_initial_state, token, token_number)
                     token_number = token_number + 1
-            elif type(spec) == types.TupleType:
+            elif isinstance(spec, tuple):
                 self.add_token_to_machine(
                     nfa, default_initial_state, spec, token_number)
                 token_number = token_number + 1
@@ -135,6 +124,7 @@ class Lexicon:
                 raise Errors.InvalidToken(
                     token_number,
                     "Expected a token definition (tuple) or State instance")
+
         if timings:
             time2 = time()
             total_time = total_time + (time2 - time1)
@@ -142,7 +132,9 @@ class Lexicon:
         if debug and (debug_flags & 1):
             debug.write("\n============= NFA ===========\n")
             nfa.dump(debug)
+
         dfa = DFA.nfa_to_dfa(nfa, debug = (debug_flags & 3) == 3 and debug)
+
         if timings:
             time4 = time()
             total_time = total_time + (time4 - time3)
@@ -153,6 +145,7 @@ class Lexicon:
             timings.write("Constructing NFA : %5.2f\n" % (time2 - time1))
             timings.write("Converting to DFA: %5.2f\n" % (time4 - time3))
             timings.write("TOTAL            : %5.2f\n" % total_time)
+
         self.machine = dfa
 
     def add_token_to_machine(self, machine, initial_state, token_spec, token_number):
@@ -176,9 +169,9 @@ class Lexicon:
             raise e.__class__("Token number %d: %s" % (token_number, e))
 
     def parse_token_definition(self, token_spec):
-        if type(token_spec) <> types.TupleType:
+        if not isinstance(token_spec, tuple):
             raise Errors.InvalidToken("Token definition is not a tuple")
-        if len(token_spec) <> 2:
+        if len(token_spec) != 2:
             raise Errors.InvalidToken("Wrong number of items in token definition")
         pattern, action = token_spec
         if not isinstance(pattern, Regexps.RE):
