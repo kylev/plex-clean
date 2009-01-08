@@ -7,9 +7,8 @@ class RegexpSyntaxError(PlexError):
     pass
 
 def re(s):
-    """
-    Convert traditional string representation of regular expression |s|
-    into Plex representation.
+    """Convert traditional string representation of regular expression |s| into
+    Plex representation.
     """
     return REParser(s).parse_re()
 
