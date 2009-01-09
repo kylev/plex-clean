@@ -42,9 +42,6 @@ class Scanner:
 
     """
 
-    lexicon = None        # Lexicon
-    stream = None         # file-like object
-    name = ''
     buffer = ''
     buf_start_pos = 0     # position in input of start of buffer
     next_pos = 0          # position in input of next char to read
@@ -60,7 +57,7 @@ class Scanner:
     queue = None          # list of tokens to be returned
     trace = 0
 
-    def __init__(self, lexicon, stream, name = ''):
+    def __init__(self, lexicon, stream, name=''):
         """
         Scanner(lexicon, stream, name = '')
 

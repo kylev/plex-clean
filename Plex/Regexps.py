@@ -66,7 +66,7 @@ def CodeRanges(code_list):
     re_list = []
     for i in xrange(0, len(code_list), 2):
         re_list.append(CodeRange(code_list[i], code_list[i + 1]))
-    return apply(Alt, tuple(re_list))
+    return Alt(*re_list)
 
 def CodeRange(code1, code2):
     """
@@ -75,8 +75,7 @@ def CodeRange(code1, code2):
     """
     if code1 <= nl_code < code2:
         return Alt(RawCodeRange(code1, nl_code),
-                             RawNewline,
-                             RawCodeRange(nl_code + 1, code2))
+                   RawNewline, RawCodeRange(nl_code + 1, code2))
     else:
         return RawCodeRange(code1, code2)
 
@@ -105,8 +104,8 @@ class RE:
         beginning of a line. If nocase is true, upper and lower case
         letters should be treated as equivalent.
         """
-        raise exceptions.UnimplementedMethod("%s.build_machine not implemented" %
-            self.__class__.__name__)
+        raise NotImplementedError("%s.build_machine not implemented" %
+                                  self.__class__.__name__)
 
     def build_opt(self, m, initial_state, c):
         """
