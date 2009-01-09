@@ -18,8 +18,7 @@ if force_debug or sys.argv[1:2] == ["-d"]:
 else:
     debug = None
 
-def run(lexicon, test_name,
-                debug = 0, trace = 0, scanner_class = Plex.Scanner):
+def run(lexicon, test_name, debug=0, trace=0, scanner_class=Plex.Scanner):
     if debug:
         debug_file = sys.stdout
         lexicon.machine.dump(debug_file)
