@@ -8,13 +8,10 @@ LOWEST_PRIORITY = -sys.maxint
 
 class Machine:
     """A collection of Nodes representing an NFA or DFA."""
-    states = None         # [Node]
-    next_state_number = 1
-    initial_states = None # {(name, bol): Node}
-
     def __init__(self):
         self.states = []
         self.initial_states = {}
+        self.next_state_number = 1
 
     def __del__(self):
         #print "Destroying", self ###
@@ -24,10 +21,10 @@ class Machine:
     def new_state(self):
         """Add a new state to the machine and return it."""
         s = Node()
-        n = self.next_state_number
-        self.next_state_number = n + 1
-        s.number = n
+        s.number = self.next_state_number
         self.states.append(s)
+
+        self.next_state_number += 1
         return s
 
     def new_initial_state(self, name):
