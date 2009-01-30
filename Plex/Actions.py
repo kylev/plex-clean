@@ -61,8 +61,7 @@ class Begin(Action):
 
 
 class Ignore(Action):
-    """
-    IGNORE is a Plex action which causes its associated token
+    """IGNORE is a Plex action which causes its associated token
     to be ignored. See the docstring of Plex.Lexicon  for more
     information.
     """
@@ -76,8 +75,7 @@ IGNORE = Ignore()
 IGNORE.__doc__ = Ignore.__doc__
 
 class Text(Action):
-    """
-    TEXT is a Plex action which causes the text of a token to
+    """TEXT is a Plex action which causes the text of a token to
     be returned as the value of the token. See the docstring of
     Plex.Lexicon  for more information.
     """
