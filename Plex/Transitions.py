@@ -1,9 +1,7 @@
-#
-#   Plex - Transition Maps
-#
-#   This version represents state sets direcly as dicts
-#   for speed.
-#
+"""Transition Maps
+
+This version represents state sets direcly as dicts for speed.
+"""
 
 import sys
 
@@ -35,12 +33,8 @@ class TransitionMap:
     dictionary.
     """
     def __init__(self, t_map=None, special=None):
-        if not t_map:
-            t_map = [-sys.maxint, {}, sys.maxint]
-        if not special:
-            special = dict()
-        self.map = t_map
-        self.special = special
+        self.map = t_map or [-sys.maxint, {}, sys.maxint]
+        self.special = special or dict()
 
     def add(self, event, new_state):
         """Add transition to |new_state| on |event|."""
@@ -61,9 +55,8 @@ class TransitionMap:
             code0, code1 = event
             i = self.split(code0)
             j = self.split(code1)
-            map = self.map
             while i < j:
-                map[i + 1].update(new_set)
+                self.map[i + 1].update(new_set)
                 i = i + 2
         else:
             self.get_special(event).update(new_set)
@@ -96,15 +89,13 @@ class TransitionMap:
     # ------------------- Private methods --------------------
 
     def split(self, code, len=len, maxint=sys.maxint):
-        """
-        Search the list for the position of the split point for |code|,
+        """Search the list for the position of the split point for |code|,
         inserting a new split point if necessary. Returns index |i| such
         that |code| == |map[i]|.
         """
         # We use a funky variation on binary search.
-        map = self.map
-        hi = len(map) - 1
-        # Special case: code == map[-1]
+        hi = len(self.map) - 1
+        # Special case: code == self.map[-1]
         if code == maxint:
             return hi
         # General case
@@ -113,16 +104,15 @@ class TransitionMap:
         while hi - lo >= 4:
             # Find midpoint truncated to even index
             mid = ((lo + hi) / 2) & ~1
-            if code < map[mid]:
+            if code < self.map[mid]:
                 hi = mid
             else:
                 lo = mid
-        # map[lo] <= code < map[hi] and hi - lo == 2
-        if map[lo] == code:
+
+        if self.map[lo] == code:
             return lo
         else:
-            map[hi:hi] = [code, map[hi - 1].copy()]
-            #self.check() ###
+            self.map[hi:hi] = [code, self.map[hi - 1].copy()]
             return hi
 
     def get_special(self, event):

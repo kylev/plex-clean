@@ -1,10 +1,4 @@
-#=======================================================================
-#
-#   Python Lexical Analyser
-#
-#   Actions for use in token specifications
-#
-#=======================================================================
+"""Plex ctions for use in token specifications."""
 
 class Action(object):
     def same_as(self, other):
